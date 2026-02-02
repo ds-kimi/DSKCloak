@@ -32,7 +32,7 @@ local overlay
 
 local function UpdateCloakOverlay()
     if isCloaked and not IsValid(overlay) then
-        overlay = vgui.Create("DPanel")
+        overlay = vgui.Create("EditablePanel")
         overlay:SetPos(0, 0)
         overlay:SetSize(ScrW(), ScrH())
         overlay:SetMouseInputEnabled(false)
