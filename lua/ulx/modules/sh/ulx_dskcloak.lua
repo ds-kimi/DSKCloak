@@ -1,3 +1,11 @@
+--[[
+     _           _    _           _
+  __| |___      | | _(_)_ __ ___ (_)
+ / _` / __|_____| |/ / | '_ ` _ \| |
+| (_| \__ \_____|   <| | | | | | | |
+ \__,_|___/     |_|\_\_|_| |_| |_|_|
+                                     --]]
+
 function ulx.dskcloak(calling_ply, target_plys)
     for i = 1, #target_plys do
         local target = target_plys[i]
