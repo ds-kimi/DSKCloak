@@ -9,45 +9,33 @@
 
 local isCloaked = false
 
-local function DrawCloakedIndicator()
-    local text = "[ CLOAKED ]"
-    surface.SetFont("DermaLarge")
-    local w = surface.GetTextSize(text)
-    surface.SetTextColor(255, 50, 50, 200 + math.sin(CurTime() * 3) * 55)
-    surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() - 60)
-    surface.DrawText(text)
-end
+local cRed = Color(255, 50, 50)
+local cYellow = Color(255, 200, 50)
 
-local function DrawVoiceWarning()
-    if not LocalPlayer():IsSpeaking() then return end
-    local text = "Cheaters can see you while talking!"
-    surface.SetFont("DermaDefault")
-    local w = surface.GetTextSize(text)
-    surface.SetTextColor(255, 200, 50, 200 + math.sin(CurTime() * 5) * 55)
-    surface.SetTextPos(ScrW() - w - ScrW() * 0.01, ScrH() * 0.02)
-    surface.DrawText(text)
-end
+local function enablehook()
+    hook.Add("HUDPaint", "dskcloak_hudpaint", function()
+        if not isCloaked then return end
+        local bIsSpeaking = LocalPlayer():IsSpeaking()
 
-local overlay
+        cRed.a = 200 + math.sin(CurTime() * 3) * 55
+        draw.SimpleText("[ CLOAKED ]", "DermaLarge", ScrW() / 2, ScrH() - 60, cRed, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-local function UpdateCloakOverlay()
-    if isCloaked and not IsValid(overlay) then
-        overlay = vgui.Create("DPanel")
-        overlay:SetPos(0, 0)
-        overlay:SetSize(ScrW(), ScrH())
-        overlay:SetMouseInputEnabled(false)
-        overlay:SetKeyboardInputEnabled(false)
-        overlay.Paint = function()
-            DrawCloakedIndicator()
-            DrawVoiceWarning()
+        if bIsSpeaking then
+            cYellow.a = 200 + math.sin(CurTime() * 5) * 55
+            draw.SimpleText("Cheaters can see you while talking!", "DermaDefault", ScrW() * 0.01, ScrH() * 0.02, cYellow, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
         end
-    elseif not isCloaked and IsValid(overlay) then
-        overlay:Remove()
-        overlay = nil
-    end
+    end)
+end
+
+local function disablehook()
+    hook.Remove("HUDPaint", "dskcloak_hudpaint")
 end
 
 net.Receive("dskcloak_status", function()
     isCloaked = net.ReadBool()
-    UpdateCloakOverlay()
+    if isCloaked then
+        enablehook()
+    else
+        disablehook()
+    end
 end)
