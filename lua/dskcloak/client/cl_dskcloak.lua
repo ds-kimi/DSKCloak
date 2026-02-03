@@ -15,7 +15,8 @@ local function DrawCloakedIndicator()
     local text = "[ CLOAKED ]"
     surface.SetFont("DermaLarge")
     local w = surface.GetTextSize(text)
-    surface.SetTextColor(red.r, red.g, red.b, 200 + math.sin(CurTime() * 3) * 55)
+    red.a = 200 + math.sin(CurTime() * 3) * 55
+    surface.SetTextColor(red)
     surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() - 60)
     surface.DrawText(text)
 end
@@ -25,7 +26,8 @@ local function DrawVoiceWarning()
     local text = "Cheaters can see you while talking!"
     surface.SetFont("DermaDefault")
     local w = surface.GetTextSize(text)
-    surface.SetTextColor(yellow.r, yellow.g, yellow.b, 200 + math.sin(CurTime() * 5) * 55)
+    yellow.a = 200 + math.sin(CurTime() * 5) * 55
+    surface.SetTextColor(yellow)
     surface.SetTextPos(ScrW() - w - ScrW() * 0.01, ScrH() * 0.02)
     surface.DrawText(text)
 end
