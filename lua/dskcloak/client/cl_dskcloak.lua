@@ -22,7 +22,7 @@ local function enablehook()
 
         if bIsSpeaking then
             cYellow.a = 200 + math.sin(CurTime() * 5) * 55
-            draw.SimpleText("Cheaters can see you while talking!", "DermaDefault", ScrW() * 0.01, ScrH() * 0.02, cYellow, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+            draw.SimpleText("Cheaters can see you while talking!", "DermaDefault", ScrW() * 0.01, ScrH() * 0.02, cYellow, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         end
     end)
 end
