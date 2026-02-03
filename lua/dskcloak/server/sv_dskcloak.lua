@@ -67,10 +67,15 @@ hook.Add("WeaponEquip", "dskcloak_hide_new_weapon", function(wep, owner)
     end
 end)
 
-local tRanks = {
-    ["superadmin"] = true,
-    ["admin"] = true,
-}
+hook.Add( "InitPostEntity", "DSKCloak::CAMI", function()
+    if not CAMI or not CAMI.RegisterPrivilege then return end
+    if SAM or ulx then return end
+
+    CAMI.RegisterPrivilege( {
+        Name = "DSKCloak::Cloak",
+        MinAccess = "admin"
+    } )
+end )
 
 local function findPlayers(sValue, pLocal)
     if sValue == "^" then
@@ -91,9 +96,8 @@ local function findPlayers(sValue, pLocal)
 end
 
 concommand.Add("dskcloak", function(pTarget, _, tArgs)
-    if not IsValid(pTarget) or not tRanks[pTarget:GetUserGroup()] then
-        return
-    end
+    if SAM or ulx then return end
+    if not IsValid(pTarget) or not CAMI.PlayerHasAccess( pTarget, "DSKCloak::Cloak" ) then return end
 
     local sTarget = tArgs[1]
     if not sTarget then
