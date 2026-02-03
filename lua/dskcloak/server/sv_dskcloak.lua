@@ -66,3 +66,48 @@ hook.Add("WeaponEquip", "dskcloak_hide_new_weapon", function(wep, owner)
         end
     end
 end)
+
+local tRanks = {
+    ["superadmin"] = true,
+    ["admin"] = true,
+}
+
+local function findPlayers(sValue, pLocal)
+    if sValue == "^" then
+        return pLocal
+    end
+
+    if sValue == "@" then
+        return pLocal:GetEyeTrace().Entity
+    end
+
+    for _, pTarget in player.Iterator() do
+        if pTarget:Nick():lower():find(sValue:lower()) or pTarget:SteamID():lower():find(sValue:lower()) or pTarget:SteamID64():lower():find(sValue:lower()) then
+            return pTarget
+        end
+    end
+
+    return nil
+end
+
+concommand.Add("dskcloak", function(pTarget, _, tArgs)
+    if not IsValid(pTarget) or not tRanks[pTarget:GetUserGroup()] then
+        return
+    end
+
+    local sTarget = tArgs[1]
+    if not sTarget then
+        return
+    end
+
+    local pCloak = findPlayers(sTarget, pTarget)
+    if not IsValid(pCloak) then
+        pTarget:ChatPrint("[DSKCloak] Target player not found.")
+        return
+    end
+
+    local bCloak = not DSKCloak.IsCloaked(pCloak)
+    DSKCloak.SetCloakState(pCloak, bCloak, pTarget)
+
+    pTarget:ChatPrint(("[DSKCloak] %s has been %scloaked."):format(pCloak:Nick(), bCloak and "" or "un"))
+end)
