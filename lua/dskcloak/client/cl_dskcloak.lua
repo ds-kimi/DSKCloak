@@ -57,26 +57,12 @@ local function DrawVoiceWarning()
     surface.DrawText(text)
 end
 
-local overlay
-
-local function UpdateCloakOverlay()
-    if isCloaked and not IsValid(overlay) then
-        overlay = vgui.Create("DPanel")
-        overlay:SetPos(0, 0)
-        overlay:SetSize(ScrW(), ScrH())
-        overlay:SetMouseInputEnabled(false)
-        overlay:SetKeyboardInputEnabled(false)
-        overlay.Paint = function()
-            DrawCloakedIndicator()
-            DrawVoiceWarning()
-        end
-    elseif not isCloaked and IsValid(overlay) then
-        overlay:Remove()
-        overlay = nil
-    end
-end
+hook.Add("HUDPaint", "DSKCloak_HUD", function()
+    if not isCloaked then return end
+    DrawCloakedIndicator()
+    DrawVoiceWarning()
+end)
 
 net.Receive("dskcloak_status", function()
     isCloaked = net.ReadBool()
-    UpdateCloakOverlay()
 end)
