@@ -42,6 +42,10 @@ function DSKCloak.IsCloaked(ply)
     return DSKCloak.CloakedPlayers[ply] or false
 end
 
+function DSKCloak.ToggleCloak(target, actor)
+    DSKCloak.SetCloakState(target, not DSKCloak.IsCloaked(target), actor)
+end
+
 hook.Add("PlayerInitialSpawn", "dskcloak_hide_from_new", function(newPly)
     timer.Simple(1, function()
         if not IsValid(newPly) then return end

@@ -6,14 +6,18 @@
  \__,_|___/     |_|\_\_|_| |_| |_|_|
                                      --]]
 
-
+DSKCloak = DSKCloak or {}
 local isCloaked = false
+
+function DSKCloak.IsCloaked()
+    return isCloaked
+end
 
 local function DrawCloakedIndicator()
     local text = "[ CLOAKED ]"
     surface.SetFont("DermaLarge")
     local w = surface.GetTextSize(text)
-    surface.SetTextColor(255, 50, 50, 200 + math.sin(CurTime() * 3) * 55)
+    surface.SetTextColor(50, 122, 255, 200 + math.sin(CurTime() * 3) * 55)
     surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() - 60)
     surface.DrawText(text)
 end
