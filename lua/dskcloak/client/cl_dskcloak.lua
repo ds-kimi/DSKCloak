@@ -9,6 +9,9 @@
 DSKCloak = DSKCloak or {}
 local isCloaked = false
 
+local cloakedColor = Color(50, 122, 255, 200)
+local voiceWarningColor = Color(255, 200, 50, 200)
+
 function DSKCloak.IsCloaked()
     return isCloaked
 end
@@ -17,7 +20,7 @@ local function DrawCloakedIndicator()
     local text = "[ CLOAKED ]"
     surface.SetFont("DermaLarge")
     local w = surface.GetTextSize(text)
-    surface.SetTextColor(50, 122, 255, 200 + math.sin(CurTime() * 3) * 55)
+    surface.SetTextColor(cloakedColor)
     surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() - 60)
     surface.DrawText(text)
 end
@@ -27,7 +30,7 @@ local function DrawVoiceWarning()
     local text = "Cheaters can see you while talking!"
     surface.SetFont("DermaDefault")
     local w = surface.GetTextSize(text)
-    surface.SetTextColor(255, 200, 50, 200 + math.sin(CurTime() * 5) * 55)
+    surface.SetTextColor(voiceWarningColor)
     surface.SetTextPos(ScrW() - w - ScrW() * 0.01, ScrH() * 0.02)
     surface.DrawText(text)
 end
