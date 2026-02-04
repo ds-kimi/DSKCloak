@@ -57,12 +57,22 @@ local function DrawVoiceWarning()
     surface.DrawText(text)
 end
 
-hook.Add("HUDPaint", "DSKCloak_HUD", function()
-    if not isCloaked then return end
-    DrawCloakedIndicator()
-    DrawVoiceWarning()
-end)
+local function EnableHook()
+    hook.Add("HUDPaint", "DSKCloak_HUD", function()
+        DrawCloakedIndicator()
+        DrawVoiceWarning()
+    end)
+end
+
+local function DisableHook()
+    hook.Remove("HUDPaint", "DSKCloak_HUD")
+end
 
 net.Receive("dskcloak_status", function()
     isCloaked = net.ReadBool()
+    if isCloaked then
+        EnableHook()
+    else
+        DisableHook()
+    end
 end)
