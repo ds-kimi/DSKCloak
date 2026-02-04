@@ -71,3 +71,64 @@ hook.Add("WeaponEquip", "dskcloak_hide_new_weapon", function(wep, owner)
     local oRecipientFilter = getPlayers(owner)
     wep:SetPreventTransmit(oRecipientFilter, true)
 end)
+
+hook.Add("InitPostEntity", "DSKCloak::CAMI", function()
+    if not CAMI or not CAMI.RegisterPrivilege then return end
+    if SAM or ulx then return end
+
+    CAMI.RegisterPrivilege({
+        Name = "DSKCloak::Cloak",
+        MinAccess = "admin"
+    })
+end)
+
+hook.Add("InitPostEntity", "DSKCloak::Concommand", function()
+    if SAM or ulx then return end
+
+    local tRanks = {
+        ["superadmin"] = true,
+        ["admin"] = true,
+    }
+
+    local function hasAccess(ply)
+        if tRanks[ply:GetUserGroup()] then return true end
+        if CAMI and CAMI.PlayerHasAccess then
+            return CAMI.PlayerHasAccess(ply, "DSKCloak::Cloak")
+        end
+        return false
+    end
+
+    local function findPlayers(sValue, pLocal)
+        if sValue == "^" then return pLocal end
+        if sValue == "@" then return pLocal:GetEyeTrace().Entity end
+
+        for _, pTarget in player.Iterator() do
+            local sNick = pTarget:Nick():lower()
+            local sSteamID = pTarget:SteamID():lower()
+            local sSteamID64 = pTarget:SteamID64():lower()
+            local sSearch = sValue:lower()
+
+            if sNick:find(sSearch) or sSteamID:find(sSearch) or sSteamID64:find(sSearch) then
+                return pTarget
+            end
+        end
+        return nil
+    end
+
+    concommand.Add("dskcloak", function(ply, _, tArgs)
+        if not IsValid(ply) or not hasAccess(ply) then return end
+
+        local sTarget = tArgs[1]
+        if not sTarget then return end
+
+        local pCloak = findPlayers(sTarget, ply)
+        if not IsValid(pCloak) then
+            ply:ChatPrint("[DSKCloak] Target player not found.")
+            return
+        end
+
+        local bCloak = not DSKCloak.IsCloaked(pCloak)
+        DSKCloak.SetCloakState(pCloak, bCloak, ply)
+        ply:ChatPrint(("[DSKCloak] %s has been %scloaked."):format(pCloak:Nick(), bCloak and "" or "un"))
+    end)
+end)
