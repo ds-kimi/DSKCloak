@@ -12,12 +12,32 @@ local isCloaked = false
 local cloakedColor = Color(50, 122, 255, 200)
 local voiceWarningColor = Color(255, 200, 50, 200)
 
+local tLanguage = {
+    ["fr"] = {
+        CLOAKED_INDICATOR = "[ INVISIBLE ]",
+        VOICE_WARNING = "Les tricheurs peuvent vous voir en parlant !"
+    },
+    ["en"] = {
+        CLOAKED_INDICATOR = "[ CLOAKED ]",
+        VOICE_WARNING = "Cheaters can see you while talking!"
+    }
+}
+
+local function getLanguage()
+    local sLang = GetConVar("gmod_language"):GetString():lower()
+    return tLanguage[sLang] and sLang or "en"
+end
+
+local function L(key)
+    return tLanguage[getLanguage()][key]
+end
+
 function DSKCloak.IsCloaked()
     return isCloaked
 end
 
 local function DrawCloakedIndicator()
-    local text = "[ CLOAKED ]"
+    local text = L("CLOAKED_INDICATOR")
     surface.SetFont("DermaLarge")
     local w = surface.GetTextSize(text)
     cloakedColor.a = 200 + math.sin(CurTime() * 3) * 55
@@ -28,7 +48,7 @@ end
 
 local function DrawVoiceWarning()
     if not LocalPlayer():IsSpeaking() then return end
-    local text = "Cheaters can see you while talking!"
+    local text = L("VOICE_WARNING")
     surface.SetFont("DermaDefault")
     local w = surface.GetTextSize(text)
     voiceWarningColor.a = 200 + math.sin(CurTime() * 5) * 55
