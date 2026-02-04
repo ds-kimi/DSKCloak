@@ -11,24 +11,28 @@ util.AddNetworkString("dskcloak_status")
 DSKCloak = DSKCloak or {}
 DSKCloak.CloakedPlayers = DSKCloak.CloakedPlayers or {}
 
-local function RecursiveSetPreventTransmit(ent, ply, stopTransmitting)
-    if ent == ply or not IsValid(ent) or not IsValid(ply) then return end
+local function getPlayers(pOwner)
+    local oRecipientFilter = RecipientFilter()
+    oRecipientFilter:AddAllPlayers()
+    oRecipientFilter:RemovePlayer(pOwner)
+    return oRecipientFilter
+end
 
-    ent:SetPreventTransmit(ply, stopTransmitting)
+local function RecursiveSetPreventTransmit(ent, filter, stopTransmitting)
+    if not IsValid(ent) or not filter then return end
+
+    ent:SetPreventTransmit(filter, stopTransmitting)
     local children = ent:GetChildren()
     for i = 1, #children do
-        RecursiveSetPreventTransmit(children[i], ply, stopTransmitting)
+        RecursiveSetPreventTransmit(children[i], filter, stopTransmitting)
     end
 end
 
 function DSKCloak.SetCloakState(target, cloaked, actor)
     DSKCloak.CloakedPlayers[target] = cloaked or nil
 
-    for _, ply in player.Iterator() do
-        if ply ~= target then
-            RecursiveSetPreventTransmit(target, ply, cloaked)
-        end
-    end
+    local oRecipientFilter = getPlayers(target)
+    RecursiveSetPreventTransmit(target, oRecipientFilter, cloaked)
 
     net.Start("dskcloak_status")
     net.WriteBool(cloaked)
@@ -64,9 +68,6 @@ end)
 hook.Add("WeaponEquip", "dskcloak_hide_new_weapon", function(wep, owner)
     if not DSKCloak.CloakedPlayers[owner] then return end
 
-    for _, ply in player.Iterator() do
-        if ply ~= owner then
-            wep:SetPreventTransmit(ply, true)
-        end
-    end
+    local oRecipientFilter = getPlayers(owner)
+    wep:SetPreventTransmit(oRecipientFilter, true)
 end)
